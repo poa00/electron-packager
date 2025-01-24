@@ -2,7 +2,7 @@
 
 Package your [Electron](https://electronjs.org) app into OS-specific bundles (`.app`, `.exe`, etc.) via JavaScript or the command line.
 
-[![CircleCI Build Status](https://circleci.com/gh/electron/packager/tree/main.svg?style=svg)](https://circleci.com/gh/electron/packager/tree/main)
+[![Test](https://github.com/electron/packager/actions/workflows/test.yml/badge.svg)](https://github.com/electron/packager/actions/workflows/test.yml)
 [![electron-nightly Canary](https://github.com/electron/packager/actions/workflows/canary.yml/badge.svg)](https://github.com/electron/packager/actions/workflows/canary.yml)
 [![Coverage Status](https://codecov.io/gh/electron/packager/branch/main/graph/badge.svg)](https://codecov.io/gh/electron/packager)
 [![npm](https://img.shields.io/npm/v/@electron/packager.svg?style=flat)](https://npm.im/@electron/packager)
@@ -61,15 +61,6 @@ npm install --save-dev @electron/packager
 
 It is **not** recommended to install `@electron/packager` globally.
 
-### Building Windows apps from non-Windows platforms
-
-Building an Electron app for the Windows target platform requires editing the `Electron.exe` file.
-Currently, Electron Packager uses [`node-rcedit`](https://github.com/electron/node-rcedit) to accomplish
-this. A Windows executable is bundled in that Node package and needs to be run in order for this
-functionality to work, so on non-Windows host platforms (not including WSL),
-[Wine](https://www.winehq.org/) 1.6 or later needs to be installed. On macOS, it is installable
-via [Homebrew](https://brew.sh/).
-
 ## Usage
 
 ### Via JavaScript
@@ -81,7 +72,7 @@ JavaScript API usage can be found in the [API documentation](https://electron.gi
 Running Electron Packager from the command line has this basic form:
 
 ```
-npx electron-packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [optional flags...]
+npx @electron/packager <sourcedir> <appname> --platform=<platform> --arch=<arch> [optional flags...]
 ```
 
 > **Note**:
@@ -106,7 +97,7 @@ detailed descriptions, see the [API documentation](https://electron.github.io/pa
 For flags that are structured as objects, you can pass each option as via dot notation as such:
 
 ```sh
-npx electron-packager --flag.foo="bar"
+npx @electron/packager --flag.foo="bar"
 # will pass in { flag: { foo: "bar"} } as an option to the Electron Packager API
 ```
 
@@ -147,10 +138,10 @@ foobar
 When one runs the following command for the first time in the `foobar` directory:
 
 ```
-npx electron-packager .
+npx @electron/packager .
 ```
 
-`electron-packager` will do the following:
+`@electron/packager` will do the following:
 
 * Use the current directory for the `sourcedir`
 * Infer the `appname` from the `productName` in `package.json`

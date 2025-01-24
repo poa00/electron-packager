@@ -169,7 +169,7 @@ async function appBundleTest (t, opts, appBundleId) {
   assertCFBundleIdentifierValue(t, obj, appBundleIdentifier, 'CFBundleName should reflect opts.appBundleId or fallback to default')
 }
 
-async function appHelpersBundleTest (t, opts, helperBundleId, appBundleId) {
+async function appHelpersBundleLegacyTest (t, opts, helperBundleId, appBundleId) {
   opts.electronVersion = '1.4.13'
 
   if (helperBundleId) {
@@ -428,11 +428,11 @@ if (!(process.env.CI && process.platform === 'win32')) {
     ])
   }))
 
-  test.serial('app helpers bundle', darwinTest(appHelpersBundleTest, 'com.electron.basetest.helper'))
-  test.serial('app helpers bundle (w/ special characters)', darwinTest(appHelpersBundleTest, 'com.electron."bãśè tëßt!@#$%^&*()?\'.hęłpėr'))
-  test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id', darwinTest(appHelpersBundleTest, null, 'com.electron.basetest'))
-  test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters)', darwinTest(appHelpersBundleTest, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\''))
-  test.serial('app helpers bundle helper-bundle-id & app-bundle-id fallback', darwinTest(appHelpersBundleTest))
+  test.serial('app helpers bundle', darwinTest(appHelpersBundleLegacyTest, 'com.electron.basetest.helper'))
+  test.serial('app helpers bundle (w/ special characters)', darwinTest(appHelpersBundleLegacyTest, 'com.electron."bãśè tëßt!@#$%^&*()?\'.hęłpėr'))
+  test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id', darwinTest(appHelpersBundleLegacyTest, null, 'com.electron.basetest'))
+  test.serial('app helpers bundle helper-bundle-id fallback to app-bundle-id (w/ special characters)', darwinTest(appHelpersBundleLegacyTest, null, 'com.electron."bãśè tëßt!!@#$%^&*()?\''))
+  test.serial('app helpers bundle helper-bundle-id & app-bundle-id fallback', darwinTest(appHelpersBundleLegacyTest))
 
   test.serial('app helpers bundle with renderer/plugin helpers', darwinTest(appHelpersBundleElectron6Test))
 
@@ -495,6 +495,24 @@ if (!(process.env.CI && process.platform === 'win32')) {
       'Resources/app.asar': {
         algorithm: 'SHA256',
         hash: '2ec82b43414573ce1414a09859d6d30d1fc8bcbd0b33b404125f557e18d3b536'
+      }
+    })
+  }))
+
+  test.serial('prebuilt asar integrity hashes are automatically inserted', darwinTest(async (t, baseOpts) => {
+    const opts = {
+      ...baseOpts,
+      dir: util.fixtureSubdir('asar-prebuilt')
+    }
+    opts.prebuiltAsar = path.join(opts.dir, 'app.asar')
+    const finalPath = (await packager(opts))[0]
+    const plistObj = await parseInfoPlist(t, opts, finalPath)
+    t.is(typeof plistObj.ElectronAsarIntegrity, 'object')
+    // Note: If you update test/fixtures/asar-prebuilt/app.asar, ths hash should also be updated.
+    t.deepEqual(plistObj.ElectronAsarIntegrity, {
+      'Resources/app.asar': {
+        algorithm: 'SHA256',
+        hash: '5efe069acf1f8d2622f2da149fcedcd5e17f9e7f4bc6f7ffe89255ee96647d4f'
       }
     })
   }))
